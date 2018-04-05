@@ -8,5 +8,19 @@
 </head>
 <body>
     <h1>Creating a custom button with ripple effect in Xamarin Forms</h1>
+    <p>Xamarin Forms is very powerful system and allows for a lot of customization out of the box.
+        However, sometimes you need to go beyond the default controls and build something custom. I recently
+        ran into this when I needed to build a multi-line custom button similiar to <img src="" alt="Multi line button" />.
+        The Button control in Xamarin Forms only allows a single line of text and doesn't provide a way
+        to customize the button's layout. You could create a custom control within Forms using a StackLayout and
+        a TapGestureRecognizer, but you would loose responsize behaviors like color changes on iOS and the ripple
+        effect on Android. This is where custom renderers come in.
+    </p>
+    <p>
+        Xamarin provides documentation on how to create a custom renderer in several situations <href a="" target="_blank">here</href>
+        which will get you through many situations but there isn't anythign specific to custom buttons, so I thought
+        I'd write down what I did to create this effect. All of the code for this post is available on <href a="" target="_blank">GitHub</href>
+        with tags for each step of the process.
+    </p>
 </body>
 </html>

@@ -23,6 +23,86 @@
         with tags for each step of the process. If you want to follow along, start with the tag "initial-view-model"
     </p>
     <p>
+        The first thing to do is to set up your view and view model so they handle any bindable data you need. In this
+        case I created two buttons that, when clicked, increment a counter. The counter is displayed below each button.
+        The view XAML is:
+        <pre>
+                &lt;?xml version="1.0" encoding="utf-8"?&gt;
+                &lt;ContentPage 
+                    xmlns="http://xamarin.com/schemas/2014/forms" 
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+                    xmlns:local="clr-namespace:RippleRenderer" 
+                    x:Class="RippleRenderer.RippleRendererPage"
+                    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+                    ios:Page.UseSafeArea="true"&gt;
+                    &lt;StackLayout
+                        Orientation="Vertical"&gt;
+                        &lt;Button Text="Click me 1" BackgroundColor="Blue" TextColor="White" Command="{Binding Button1ClickCommand}"/&gt;
+                        &lt;StackLayout Orientation="Horizontal"&gt;
+                            &lt;Label Text="Button 1 click count: "/&gt;
+                            &lt;Label Text="{Binding Button1ClickCount}" /&gt;
+                        &lt;/StackLayout&gt;
+                        &lt;Button Text="Click me 2" BackgroundColor="Red" TextColor="White" Command="{Binding Button2ClickCommand}"/&gt;
+                        &lt;StackLayout Orientation="Horizontal"&gt;
+                            &lt;Label Text="Button 2 click count: "/&gt;
+                            &lt;Label Text="{Binding Button2ClickCount}" /&gt;
+                        &lt;/StackLayout&gt;
+                    &lt;/StackLayout&gt;
+                    
+                &lt;/ContentPage&gt;
+        </pre>
+        And the view model code is
+        <pre>
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Xamarin.Forms;
+
+namespace RippleRenderer
+{
+    public class RippleRendererViewModel : INotifyPropertyChanged
+    {
+        public RippleRendererViewModel()
+        {
+            Button1ClickCommand = new Command(() => Button1ClickCount++);
+            Button2ClickCommand = new Command(() => Button2ClickCount++);
+        }
+
+        private int _button1ClickCount = 0;
+        public int Button1ClickCount
+        {
+            get => _button1ClickCount;
+            set 
+            {
+                _button1ClickCount = value;
+                OnPropertyChanged(); 
+            }
+        }
+
+        private int _button2ClickCount = 0;
+        public int Button2ClickCount
+        {
+            get => _button2ClickCount;
+            set
+            {
+                _button2ClickCount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Command Button1ClickCommand { get; set; }
+        public Command Button2ClickCommand { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = "") =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}                
+        </pre>
+        It may seem like overkill to set up the View this way, even though we plan to replace the buttons
+        and labels with our own custom content, but it serves a purpose. This way we can verify that we
+        have all the bindings we need in place and working before we start getting into the more interesting, and
+        more complicated, renderer logic.
     </p>
 </body>
 </html>

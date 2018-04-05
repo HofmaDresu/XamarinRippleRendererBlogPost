@@ -8,16 +8,15 @@
     ios:Page.UseSafeArea="true">
     <StackLayout
         Orientation="Vertical">
-        <Button Text="Click me 1" BackgroundColor="Blue" TextColor="White" Command="{Binding Button1ClickCommand}"/>
-        <StackLayout Orientation="Horizontal">
-            <Label Text="Button 1 click count: "/>
-            <Label Text="{Binding Button1ClickCount}" />
-        </StackLayout>
-        <Button Text="Click me 2" BackgroundColor="Red" TextColor="White" Command="{Binding Button2ClickCommand}"/>
-        <StackLayout Orientation="Horizontal">
-            <Label Text="Button 2 click count: "/>
-            <Label Text="{Binding Button2ClickCount}" />
-        </StackLayout>
+        <local:IncrementingButton
+            Title="Click me 1"
+            Command="{Binding Button1ClickCommand}"
+            ClickCount="{Binding Button1ClickCount}"
+            BackgroundColor="Blue"/>
+        <local:IncrementingButton
+            Title="Click me 2"
+            Command="{Binding Button2ClickCommand}"
+            ClickCount="{Binding Button2ClickCount}"
+            BackgroundColor="Red"/>
     </StackLayout>
-    
 </ContentPage>

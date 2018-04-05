@@ -27,29 +27,29 @@
         case I created two buttons that, when clicked, increment a counter. The counter is displayed below each button.
         The view XAML is:
         <pre>
-                &lt;?xml version="1.0" encoding="utf-8"?&gt;
-                &lt;ContentPage 
-                    xmlns="http://xamarin.com/schemas/2014/forms" 
-                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-                    xmlns:local="clr-namespace:RippleRenderer" 
-                    x:Class="RippleRenderer.RippleRendererPage"
-                    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
-                    ios:Page.UseSafeArea="true"&gt;
-                    &lt;StackLayout
-                        Orientation="Vertical"&gt;
-                        &lt;Button Text="Click me 1" BackgroundColor="Blue" TextColor="White" Command="{Binding Button1ClickCommand}"/&gt;
-                        &lt;StackLayout Orientation="Horizontal"&gt;
-                            &lt;Label Text="Button 1 click count: "/&gt;
-                            &lt;Label Text="{Binding Button1ClickCount}" /&gt;
-                        &lt;/StackLayout&gt;
-                        &lt;Button Text="Click me 2" BackgroundColor="Red" TextColor="White" Command="{Binding Button2ClickCommand}"/&gt;
-                        &lt;StackLayout Orientation="Horizontal"&gt;
-                            &lt;Label Text="Button 2 click count: "/&gt;
-                            &lt;Label Text="{Binding Button2ClickCount}" /&gt;
-                        &lt;/StackLayout&gt;
-                    &lt;/StackLayout&gt;
-                    
-                &lt;/ContentPage&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:RippleRenderer" 
+    x:Class="RippleRenderer.RippleRendererPage"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+    ios:Page.UseSafeArea="true"&gt;
+    &lt;StackLayout
+        Orientation="Vertical"&gt;
+        &lt;Button Text="Click me 1" BackgroundColor="Blue" TextColor="White" Command="{Binding Button1ClickCommand}"/&gt;
+        &lt;StackLayout Orientation="Horizontal"&gt;
+            &lt;Label Text="Button 1 click count: "/&gt;
+            &lt;Label Text="{Binding Button1ClickCount}" /&gt;
+        &lt;/StackLayout&gt;
+        &lt;Button Text="Click me 2" BackgroundColor="Red" TextColor="White" Command="{Binding Button2ClickCommand}"/&gt;
+        &lt;StackLayout Orientation="Horizontal"&gt;
+            &lt;Label Text="Button 2 click count: "/&gt;
+            &lt;Label Text="{Binding Button2ClickCount}" /&gt;
+        &lt;/StackLayout&gt;
+    &lt;/StackLayout&gt;
+    
+&lt;/ContentPage&gt;
         </pre>
         And the view model code is
         <pre>
@@ -99,10 +99,92 @@ namespace RippleRenderer
     }
 }                
         </pre>
-        It may seem like overkill to set up the View this way, even though we plan to replace the buttons
+        It may seem like overkill to set up the View this way even though we plan to replace the buttons
         and labels with our own custom content, but it serves a purpose. This way we can verify that we
         have all the bindings we need in place and working before we start getting into the more interesting, and
         more complicated, renderer logic.
+    </p>
+    <h3>
+        Setting up the custom renderer in Forms
+    </h3>
+    <p>
+        The first thing we need to do is determine what data we need to bind to our custom button. For this example 
+        we need four items: the button title, the button's click count, the button's click command, and the button's background color. We then create
+        a custom control in the Forms project that subclasses View. It may seem like Button would be a better base class,
+        but the Android button has similar limitations to the Xamarin Forms button and can't use a custom layout. To support
+        Android, we need to use a more generic type. Since our control's UI will be handled by custom renderers, we can
+        create a class with no XAML component:
+        <pre>
+using Xamarin.Forms;
+
+namespace RippleRenderer
+{
+    public class IncrementingButton : View
+    {
+        public static readonly BindableProperty TitleProperty = 
+            BindableProperty.Create("Title", typeof(string), typeof(IncrementingButton), string.Empty);
+        public string Title
+        {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+        
+        public static readonly BindableProperty ClickCountProperty =
+            BindableProperty.Create("ClickCount", typeof(int), typeof(IncrementingButton), 0);
+        public int ClickCount
+        {
+            get { return (int)GetValue(ClickCountProperty); }
+            set { SetValue(ClickCountProperty, value); }
+        }
+
+        public Command Command
+        {
+			get => (Command)GetValue(CommandProperty);
+			set => SetValue(CommandProperty, value);
+        }
+
+        public static readonly BindableProperty CommandProperty =
+			BindableProperty.Create("Command", typeof(Command), typeof(IncrementingButton), null);
+    }
+}                
+        </pre>
+        Notice that there is no BackgroundColor property in the code. This is because BackgroundColor is already
+        implemented by View and we can use that for our control.
+    </p>
+    <p>
+        Next we need to use the new control in our View. Since our control is in the same namespace as the view, we
+        can just use the 'local' XML namespace created by Xamarin. If 'local' is missing or the control is in
+        a different namespace, we would need to create a new XML namespace. Now we can use our new control just like
+        any built-in control:
+        <pre>
+&gt;?xml version="1.0" encoding="utf-8"?&gt;
+&gt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:RippleRenderer" 
+    x:Class="RippleRenderer.RippleRendererPage"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+    ios:Page.UseSafeArea="true"&gt;
+    &gt;StackLayout
+        Orientation="Vertical"&gt;
+        &gt;local:IncrementingButton
+            Title="Click me 1"
+            Command="{Binding Button1ClickCommand}"
+            ClickCount="{Binding Button1ClickCount}"
+            BackgroundColor="Blue"/&gt;
+        &gt;local:IncrementingButton
+            Title="Click me 2"
+            Command="{Binding Button2ClickCommand}"
+            ClickCount="{Binding Button2ClickCount}"
+            BackgroundColor="Red"/&gt;
+    &gt;/StackLayout&gt;
+&gt;/ContentPage&gt;                
+        </pre>
+        Note: at this point we won't be able to run the app and see anything on any platform. Since we haven't
+        create a custom renderer yet, Xamarin defaults to a basic View renderer. Since our views have no content,
+        nothing is displayed. If you want to verify that Xamarin is in fact rendering a view, you can add a 
+        non-zero HeightRequest and run the application. The completed code for this step is available at tag
+        "forms-custom-control".
     </p>
 </body>
 </html>

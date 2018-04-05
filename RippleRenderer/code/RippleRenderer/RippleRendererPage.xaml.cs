@@ -7,6 +7,7 @@ namespace RippleRenderer
         public RippleRendererPage()
         {
             InitializeComponent();
+			BindingContext = new RippleRendererViewModel();
         }
     }
 }

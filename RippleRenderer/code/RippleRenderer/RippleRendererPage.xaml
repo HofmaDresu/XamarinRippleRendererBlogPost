@@ -1,4 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:RippleRenderer" x:Class="RippleRenderer.RippleRendererPage">
-    <Label Text="Welcome to Xamarin Forms!" VerticalOptions="Center" HorizontalOptions="Center" />
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:RippleRenderer" 
+    x:Class="RippleRenderer.RippleRendererPage"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+    ios:Page.UseSafeArea="true">
+    <StackLayout
+        Orientation="Vertical">
+        <Button Text="Click me 1" BackgroundColor="Blue" TextColor="White" Command="{Binding Button1ClickCommand}"/>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="Button 1 click count: "/>
+            <Label Text="{Binding Button1ClickCount}" />
+        </StackLayout>
+        <Button Text="Click me 2" BackgroundColor="Red" TextColor="White" Command="{Binding Button2ClickCommand}"/>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="Button 2 click count: "/>
+            <Label Text="{Binding Button2ClickCount}" />
+        </StackLayout>
+    </StackLayout>
+    
 </ContentPage>

@@ -20,6 +20,8 @@ namespace RippleRenderer.iOS
 
             var rootView = CreateLayout();
 
+            AddTouchBehavior(rootView);
+
             // Tell Xamarin to user our layout for the control
             SetNativeControl(rootView);
         }
@@ -56,6 +58,25 @@ namespace RippleRenderer.iOS
             _clickCountLabel.BottomAnchor.ConstraintEqualTo(rootView.BottomAnchor).Active = true;
 
             return rootView;
+        }
+
+        private void AddTouchBehavior(UIButton rootView)
+        {
+            rootView.TouchDown += AddTouchBackgroundColor;
+            rootView.TouchDragEnter += AddTouchBackgroundColor;
+            rootView.TouchUpInside += RemoveTouchBackgroundColor;
+            rootView.TouchCancel += RemoveTouchBackgroundColor;
+            rootView.TouchDragExit += RemoveTouchBackgroundColor;
+        }
+
+        private void AddTouchBackgroundColor(object sender, EventArgs e)
+        {
+            (sender as UIView).BackgroundColor = Element.BackgroundColor.ToUIColor().ColorWithAlpha(.5f);
+        }
+
+        private void RemoveTouchBackgroundColor(object sender, EventArgs e)
+        {
+            (sender as UIView).BackgroundColor = Element.BackgroundColor.ToUIColor();
         }
     }
 }

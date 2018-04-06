@@ -435,7 +435,7 @@ private UIButton CreateLayout()
     // Create button title label
     _buttonTitleLabel = new UILabel
     {
-        Text = Element.Title.ToString(),
+        Text = Element.Title,
         TextColor = UIColor.White,
         TranslatesAutoresizingMaskIntoConstraints = false,
     };
@@ -453,7 +453,7 @@ private UIButton CreateLayout()
     rootView.AddSubview(_clickCountLabel);
     _clickCountLabel.TopAnchor.ConstraintEqualTo(_buttonTitleLabel.BottomAnchor).Active = true;
     _clickCountLabel.LeftAnchor.ConstraintEqualTo(rootView.LeftAnchor).Active = true;
-
+    _clickCountLabel.BottomAnchor.ConstraintEqualTo(rootView.BottomAnchor).Active = true;
 
     return rootView;
 }
@@ -472,7 +472,50 @@ namespace RippleRenderer.iOS
     </p>
     <p>
         At this point we can run the application and see our custom buttons on the screen. <br \><img src="InitialiOSCustomButtons.png" height="300" width="200" /><br \>
-        The completed code for this step is available at tag "ios-initial-custom-control". Next we'll add the ripple effect.
+        The completed code for this step is available at tag "ios-initial-custom-control". Next we'll add the touch effect.
+    </p>
+    <h4>
+        2. Adding a background that changes color when tapped
+    </h4>
+    <p>
+        Now that the renderer is in place, we want to start giving feedback to the user when they touch our button. On iOS we're going to add transparency the background color while the user is pressing our button.
+        We'll create a new method called AddTouchBehavior that we call just after CreateLayout()
+        <pre>       
+protected override void OnElementChanged(ElementChangedEventArgs<IncrementingButton> e)
+{
+    base.OnElementChanged(e);
+
+    var rootView = CreateLayout();
+
+    AddTouchBehavior(rootView);
+
+    // Tell Xamarin to user our layout for the control
+    SetNativeControl(rootView);
+}    
+
+...
+
+private void AddTouchBehavior(UIButton rootView)
+{
+    rootView.TouchDown += AddTouchBackgroundColor;
+    rootView.TouchDragEnter += AddTouchBackgroundColor;
+    rootView.TouchUpInside += RemoveTouchBackgroundColor;
+    rootView.TouchCancel += RemoveTouchBackgroundColor;
+    rootView.TouchDragExit += RemoveTouchBackgroundColor;
+}
+
+private void AddTouchBackgroundColor(object sender, EventArgs e)
+{
+    (sender as UIView).BackgroundColor = Element.BackgroundColor.ToUIColor().ColorWithAlpha(.5f);
+}
+
+private void RemoveTouchBackgroundColor(object sender, EventArgs e)
+{
+    (sender as UIView).BackgroundColor = Element.BackgroundColor.ToUIColor();
+}
+        </pre>
+        With this in place, we can run the app and watch the button background respond to our touches<br \><img src="iOSBackgroundEffect.gif" height="300" width="200" /><br \>
+        The completed code for this step is available at tag "ios-background-effect". Next we'll respond to the click event and update the buttons' click counts.
     </p>
 </body>
 </html>

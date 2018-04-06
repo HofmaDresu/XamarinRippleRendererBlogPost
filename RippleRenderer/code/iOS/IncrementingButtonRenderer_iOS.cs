@@ -62,6 +62,9 @@ namespace RippleRenderer.iOS
 
         private void AddTouchBehavior(UIButton rootView)
         {
+            var tapGesture = new UITapGestureRecognizer(() => Element.Command?.Execute(null));
+            rootView.AddGestureRecognizer(tapGesture);
+
             rootView.TouchDown += AddTouchBackgroundColor;
             rootView.TouchDragEnter += AddTouchBackgroundColor;
             rootView.TouchUpInside += RemoveTouchBackgroundColor;
@@ -77,6 +80,16 @@ namespace RippleRenderer.iOS
         private void RemoveTouchBackgroundColor(object sender, EventArgs e)
         {
             (sender as UIView).BackgroundColor = Element.BackgroundColor.ToUIColor();
+        }
+
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+
+            if (e.PropertyName == IncrementingButton.ClickCountProperty.PropertyName)
+            {
+                _clickCountLabel.Text = $"Clicked {Element.ClickCount} times";
+            }
         }
     }
 }

@@ -517,5 +517,36 @@ private void RemoveTouchBackgroundColor(object sender, EventArgs e)
         With this in place, we can run the app and watch the button background respond to our touches<br \><img src="iOSBackgroundEffect.gif" height="300" width="200" /><br \>
         The completed code for this step is available at tag "ios-background-effect". Next we'll respond to the click event and update the buttons' click counts.
     </p>
+    <h4>
+        3. Responding to click events and updating the click count
+    </h4>
+    <p>
+        There are two steps remaining to make this button fully functional on iOS. First we need to call the bound command when the user taps the button. This can be done in 
+        two lines of code in our AddTouchBehavior method
+        <pre>
+private void AddTouchBehavior(UIButton rootView)
+{
+    var tapGesture = new UITapGestureRecognizer(() => Element.Command?.Execute(null));
+    rootView.AddGestureRecognizer(tapGesture);
+...
+        </pre>
+    </p>
+    <p>
+        Next we need to update the click counts we show the user. For this we override a new method, OnElementPropertyChanged, and watch for any changes to the ClickCountProperty.
+        <pre>
+protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+{
+    base.OnElementPropertyChanged(sender, e);
+    if (e.PropertyName == IncrementingButton.ClickCountProperty.PropertyName)
+    {
+        _clickCountView.Text = $"Clicked {Element.ClickCount} times";
+    }
+}            
+        </pre>
+    </p>
+    <p>
+        Now we can run the app and see our click counts<br \><img src="iOSUpdateClickCount.gif" height="300" width="200" /><br \>
+        The completed code for this step is available at tag "android-update-click-count". Now that Android is complete, we'll switch over to iOS and implement a renderer there.
+    </p>    
 </body>
 </html>

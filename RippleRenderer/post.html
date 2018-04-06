@@ -186,5 +186,54 @@ namespace RippleRenderer
         non-zero HeightRequest and run the application. The completed code for this step is available at tag
         "forms-custom-control".
     </p>
+    <h3>
+        Creating a custom renderer in Android
+    </h3>
+    <p>
+        Now that we have the custom control in place, we need to tell Xamarin Forms how to display it. The first thing
+        we need to do is create a layout. For this example we're using a basic LinearLayout with two TextViews. Each
+        TextView needs an Id so we can add text later.
+        <pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;
+    &lt;TextView
+        android:id="@+id/ButtonTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" /&gt;
+    &lt;TextView
+        android:id="@+id/ClickCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" /&gt;
+&lt;/LinearLayout&gt;
+        </pre>
+    </p>
+    <p>
+        Next we need to create our custom renderer and consume the layout. This is where things start to get fun, so
+        we're going to take it in multiple steps:
+        <ol>
+            <li>The basic renderer</li>
+            <li>Adding a background with the ripple effect</li>
+            <li>Responding to click events</li>
+            <li>Dynamically updating the click count</li>
+        </ol>
+    </p>
+    <h4>
+        1. The basic renderer
+    </h4>
+    <p>
+        Now we'll create a basic renderer that displays our control with the initial data. We create a class called
+        IncrementingButtonRenderer_Android in the Android project. The "_Android" part of the name is not necessary,
+        but useful to help differentiate our renderers on each platform. The class should be a subclass of ViewRenderer&lt;IncrementingButton, Android.Views.View&gt;.
+        We need to implement the constructor IncrementingButtonRenderer_Android(Context context) : base(context) and 
+        override OnElementChanged. OnElementChanged is where we'll do the all our work.
+    </p>
+    <p>
+        In OnElementChanged, we need to inflate our layout file. We first get the layout inflator using 
+        GetSystemService(Context.LayoutInflaterService) on Context. Then we inflate our layout with inflater.Inflate(Resource.Layout.IncrementingButton, null, false).
+
+    </p>
 </body>
 </html>

@@ -10,10 +10,10 @@
     <h1>Creating a custom button with ripple effect in Xamarin Forms</h1>
     <p>Xamarin Forms is very powerful system and allows for a lot of customization out of the box.
         However, sometimes you need to go beyond the default controls and build something custom. I recently
-        ran into this when I needed to build a multi-line custom button similiar to <img src="" alt="Multi line button" />.
+        ran into this when I needed to build a multi-line custom button similiar to <br \><img src="InitialAndroidCustomButtons.png" height="300" width="200" /><br \>
         The Button control in Xamarin Forms only allows a single line of text and doesn't provide a way
         to customize the button's layout. You could create a custom control within Forms using a StackLayout and
-        a TapGestureRecognizer, but you would loose responsize behaviors like color changes on iOS and the ripple
+        a TapGestureRecognizer, but you would lose responsive behaviors like color changes on iOS and the ripple
         effect on Android. This is where custom renderers come in.
     </p>
     <p>
@@ -112,7 +112,7 @@ namespace RippleRenderer
         we need four items: the button title, the button's click count, the button's click command, and the button's background color. We then create
         a custom control in the Forms project that subclasses View. It may seem like Button would be a better base class,
         but the Android button has similar limitations to the Xamarin Forms button and can't use a custom layout. To support
-        Android, we need to use a more generic type. Since our control's UI will be handled by custom renderers, we can
+        Android, we need to use the more generic View type. Since our control's UI will be handled by custom renderers, we can
         create a class with no XAML component:
         <pre>
 using Xamarin.Forms;
@@ -139,12 +139,12 @@ namespace RippleRenderer
 
         public Command Command
         {
-			get => (Command)GetValue(CommandProperty);
-			set => SetValue(CommandProperty, value);
+            get => (Command)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
         }
 
         public static readonly BindableProperty CommandProperty =
-			BindableProperty.Create("Command", typeof(Command), typeof(IncrementingButton), null);
+            BindableProperty.Create("Command", typeof(Command), typeof(IncrementingButton), null);
     }
 }                
         </pre>
@@ -546,7 +546,11 @@ protected override void OnElementPropertyChanged(object sender, PropertyChangedE
     </p>
     <p>
         Now we can run the app and see our click counts<br \><img src="iOSUpdateClickCount.gif" height="300" width="200" /><br \>
-        The completed code for this step is available at tag "android-update-click-count". Now that Android is complete, we'll switch over to iOS and implement a renderer there.
+        The completed code for this step is available at tag "ios-update-click-count".
     </p>    
+    <br />
+    <p>
+        And there we have it! A fully customized button in Xamarin Forms that works on both iOS and Android. From here we can adjust the button's rendering and behavior as needed on both OSs.
+    </p>
 </body>
 </html>

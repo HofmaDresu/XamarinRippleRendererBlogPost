@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Creating a custom button with ripple effect in Xamarin Forms</h1>
-    <p>Xamarin Forms is very powerful system and allows for a lot of customization out of the box.
+    <p>Xamarin Forms is powerful system and allows for a lot of customization out of the box.
         However, sometimes you need to go beyond the default controls and build something custom. I recently
         ran into this when I needed to build a multi-line custom button similiar to <br \><img src="InitialAndroidCustomButtons.png" height="300" width="200" /><br \>
         The Button control in Xamarin Forms only allows a single line of text and doesn't provide a way
@@ -18,13 +18,13 @@
     </p>
     <p>
         Xamarin provides documentation on how to create a custom renderer in several situations <a href="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/custom-renderer/" target="_blank">here</a>
-        which will get you through many situations but there isn't anything specific to custom buttons, so I thought
+        but there isn't anything specific to custom buttons, so I thought
         I'd write down what I did to create this effect. All of the code for this post is available on <a href="https://github.com/HofmaDresu/XamarinRippleRendererBlogPost" target="_blank">GitHub</a>
         with tags for each step of the process. If you want to follow along, start with the tag "initial-view-model"
     </p>
     <p>
-        The first thing to do is to set up your view and view model so they handle any bindable data you need. In this
-        case I created two buttons that, when clicked, increment a counter. The counter is displayed below each button.
+        The first thing to do is to set up our view and view model so they handle any bindable data you need. In this
+        case we'll create two buttons that, when clicked, increment a counter. The counter is displayed below each button.
         The view XAML is:
         <pre>
 &lt;?xml version="1.0" encoding="utf-8"?&gt;

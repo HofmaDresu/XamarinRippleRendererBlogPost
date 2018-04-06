@@ -157,28 +157,28 @@ namespace RippleRenderer
         a different namespace, we would need to create a new XML namespace. Now we can use our new control just like
         any built-in control:
         <pre>
-&gt;?xml version="1.0" encoding="utf-8"?&gt;
-&gt;ContentPage 
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ContentPage 
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     xmlns:local="clr-namespace:RippleRenderer" 
     x:Class="RippleRenderer.RippleRendererPage"
     xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
     ios:Page.UseSafeArea="true"&gt;
-    &gt;StackLayout
+    &lt;StackLayout
         Orientation="Vertical"&gt;
-        &gt;local:IncrementingButton
+        &lt;local:IncrementingButton
             Title="Click me 1"
             Command="{Binding Button1ClickCommand}"
             ClickCount="{Binding Button1ClickCount}"
             BackgroundColor="Blue"/&gt;
-        &gt;local:IncrementingButton
+        &lt;local:IncrementingButton
             Title="Click me 2"
             Command="{Binding Button2ClickCommand}"
             ClickCount="{Binding Button2ClickCount}"
             BackgroundColor="Red"/&gt;
-    &gt;/StackLayout&gt;
-&gt;/ContentPage&gt;                
+    &lt;/StackLayout&gt;
+&lt;/ContentPage&gt;                
         </pre>
         Note: at this point we won't be able to run the app and see anything on any platform. Since we haven't
         create a custom renderer yet, Xamarin defaults to a basic View renderer. Since our views have no content,
@@ -370,6 +370,109 @@ protected override void OnElementPropertyChanged(object sender, PropertyChangedE
     <p>
         Now we can run the app and see our click counts<br \><img src="AndroidUpdateClickCount.gif" height="300" width="200" /><br \>
         The completed code for this step is available at tag "android-update-click-count". Now that Android is complete, we'll switch over to iOS and implement a renderer there.
+    </p>    
+    <h3>
+        Creating a custom renderer in iOS
+    </h3>
+    <p>
+        Creating the custom renderer in iOS follows the same basic steps we used for Android. The only differences are that we'll create the layout in code and we're going to change
+        the background color on tap instead of showing the Android ripple effect.
+        <ol>
+            <li>The basic renderer</li>
+            <li>Adding a background that changes color when tapped</li>
+            <li>Responding to click events and updating the click count</li>
+        </ol>
+    </p>
+    <h4>
+        1. The basic renderer
+    </h4>
+    <p>
+        The first thing we'll do is create a basic renderer that displays our control with the initial data. We create a class called
+        IncrementingButtonRenderer_iOS in the iOS project. The "_iOS" part of the name is not necessary,
+        but useful to help differentiate our renderers on each platform. The class should be a subclass of ViewRenderer&lt;IncrementingButton, UIView&gt;.
+        <pre>
+using RippleRenderer;
+using RippleRenderer.iOS;
+using System;
+using System.ComponentModel;
+using UIKit;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
+
+namespace RippleRenderer.iOS
+{
+    class IncrementingButtonRenderer_iOS : ViewRenderer<IncrementingButton, UIView>
+    {
+    }
+}
+        </pre>
+    </p>    
+    <p>
+        Next we'll override OnElement changed. In it we need to create our layout and set 
+        It's good practice to wrap this logic in an if block to prevent re-initilization. We also want to store references to our UILabels in private fields for later use.
+        <pre>
+private UILabel _buttonTitleLabel;
+private UILabel _clickCountLabel;
+
+protected override void OnElementChanged(ElementChangedEventArgs<IncrementingButton> e)
+{
+    base.OnElementChanged(e);
+
+    var rootView = CreateLayout();
+
+    // Tell Xamarin to user our layout for the control
+    SetNativeControl(rootView);
+}
+
+private UIButton CreateLayout()
+{
+    var rootView = new UIButton
+    {
+        BackgroundColor = Element.BackgroundColor.ToUIColor(),
+        UserInteractionEnabled = true,
+    };
+
+    // Create button title label
+    _buttonTitleLabel = new UILabel
+    {
+        Text = Element.Title.ToString(),
+        TextColor = UIColor.White,
+        TranslatesAutoresizingMaskIntoConstraints = false,
+    };
+    rootView.AddSubview(_buttonTitleLabel);
+    _buttonTitleLabel.TopAnchor.ConstraintEqualTo(rootView.TopAnchor).Active = true;
+    _buttonTitleLabel.LeftAnchor.ConstraintEqualTo(rootView.LeftAnchor).Active = true;
+
+    // Create Click Count label
+    _clickCountLabel = new UILabel
+    {
+        Text = $"Clicked {Element.ClickCount} times",
+        TextColor = UIColor.White,
+        TranslatesAutoresizingMaskIntoConstraints = false,
+    };
+    rootView.AddSubview(_clickCountLabel);
+    _clickCountLabel.TopAnchor.ConstraintEqualTo(_buttonTitleLabel.BottomAnchor).Active = true;
+    _clickCountLabel.LeftAnchor.ConstraintEqualTo(rootView.LeftAnchor).Active = true;
+
+
+    return rootView;
+}
+        </pre>
+    </p>
+    <p>
+        The final step for the basic renderer is to add an attribute telling Xamarin Forms to use our custom renderer for the IncrementingButton control.
+        <pre>
+[assembly: ExportRenderer(typeof(IncrementingButton), typeof(IncrementingButtonRenderer_iOS))]
+namespace RippleRenderer.iOS
+{
+    public class IncrementingButtonRenderer_iOS : ViewRenderer<IncrementingButton, UIView>
+    {
+...        
+        </pre>
+    </p>
+    <p>
+        At this point we can run the application and see our custom buttons on the screen. <br \><img src="InitialAndroidCustomButtons.png" height="300" width="200" /><br \>
+        The completed code for this step is available at tag "ios-initial-custom-control". Next we'll add the ripple effect.
     </p>
 </body>
 </html>

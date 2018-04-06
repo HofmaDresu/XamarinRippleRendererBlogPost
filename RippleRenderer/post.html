@@ -202,11 +202,13 @@ namespace RippleRenderer
     &lt;TextView
         android:id="@+id/ButtonTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" /&gt;
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF" /&gt;
     &lt;TextView
         android:id="@+id/ClickCount"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" /&gt;
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF" /&gt;
 &lt;/LinearLayout&gt;
         </pre>
     </p>
@@ -216,8 +218,7 @@ namespace RippleRenderer
         <ol>
             <li>The basic renderer</li>
             <li>Adding a background with the ripple effect</li>
-            <li>Responding to click events</li>
-            <li>Dynamically updating the click count</li>
+            <li>Responding to click events and updating the click count</li>
         </ol>
     </p>
     <h4>
@@ -228,12 +229,73 @@ namespace RippleRenderer
         IncrementingButtonRenderer_Android in the Android project. The "_Android" part of the name is not necessary,
         but useful to help differentiate our renderers on each platform. The class should be a subclass of ViewRenderer&lt;IncrementingButton, Android.Views.View&gt;.
         We need to implement the constructor IncrementingButtonRenderer_Android(Context context) : base(context) and 
-        override OnElementChanged. OnElementChanged is where we'll do the all our work.
+        store Context in a private field for later use.
+        <pre>
+using System.ComponentModel;
+using Android.Content;
+using Android.Views;
+using Android.Widget;
+using RippleRenderer;
+using RippleRenderer.Droid;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.Android;
+
+namespace RippleRenderer.Droid
+{
+    public class IncrementingButtonRenderer_Android : ViewRenderer<IncrementingButton, Android.Views.View>
+    {
+        private readonly Context _context;
+
+        public IncrementingButtonRenderer_Android(Context context) : base(context)
+        {
+            _context = context;
+        }
+    }
+}
+        </pre>
     </p>
     <p>
-        In OnElementChanged, we need to inflate our layout file. We first get the layout inflator using 
-        GetSystemService(Context.LayoutInflaterService) on Context. Then we inflate our layout with inflater.Inflate(Resource.Layout.IncrementingButton, null, false).
+        Next we'll override OnElement changed. In it we need to inflate our layout, set the text on our TextViews, and tell Xamarin Forms to use the inflated layout for this control.
+        It's good practice to wrap this logic in an if block to prevent re-initilization. We also want to store references to our TextViews in private fields for later use.
+        <pre>
+private TextView _buttonTitleView;
+private TextView _clickCountView;
 
+protected override void OnElementChanged(ElementChangedEventArgs<IncrementingButton> e)
+{
+    base.OnElementChanged(e);
+
+    if (Control == null)
+    {
+        // Inflate the IncrementingButton layout
+        var inflater = _context.GetSystemService(Context.LayoutInflaterService) as LayoutInflater;
+        var rootLayout = inflater.Inflate(Resource.Layout.IncrementingButton, null, false);
+
+        // Set text on Textviews
+        _buttonTitleView = rootLayout.FindViewById<TextView>(Resource.Id.ButtonTitle);
+        _buttonTitleView.Text = Element.Title;
+        _clickCountView = rootLayout.FindViewById<TextView>(Resource.Id.ClickCount);
+        _clickCountView.Text = $"Clicked {Element.ClickCount} times";
+
+        // Tell Xamarin to user our layout for the control
+        SetNativeControl(rootLayout);
+    }
+}
+        </pre>
+    </p>
+    <p>
+        The final step for the basic renderer is to add an attribute telling Xamarin Forms to use our custom renderer for the IncrementingButton control.
+        <pre>
+[assembly: ExportRenderer(typeof(IncrementingButton), typeof(IncrementingButtonRenderer_Android))]
+namespace RippleRenderer.Droid
+{
+    public class IncrementingButtonRenderer_Android : ViewRenderer<IncrementingButton, Android.Views.View>
+    {
+        </pre>
+    </p>
+    <p>
+        At this point we can run the application and see our custom buttons on the screen. <br \><img src="InitialAndroidCustomButtons.png" height="300" width="200" /><br \>
+        The completed code for this step is available at tag "android-initial-custom-control". Next we'll add the ripple effect.
     </p>
 </body>
 </html>

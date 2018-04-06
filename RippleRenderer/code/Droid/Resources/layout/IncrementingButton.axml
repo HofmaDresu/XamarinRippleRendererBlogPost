@@ -6,9 +6,11 @@
     <TextView
         android:id="@+id/ButtonTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"/>
     <TextView
         android:id="@+id/ClickCount"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF" />
 </LinearLayout>

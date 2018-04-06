@@ -297,5 +297,45 @@ namespace RippleRenderer.Droid
         At this point we can run the application and see our custom buttons on the screen. <br \><img src="InitialAndroidCustomButtons.png" height="300" width="200" /><br \>
         The completed code for this step is available at tag "android-initial-custom-control". Next we'll add the ripple effect.
     </p>
+    <h4>
+        2. Adding a background with the ripple effect
+    </h4>
+    <p>
+        Now that the renderer is in place, we want to start giving feedback to the user when they touch our button. On Android we're going to use the Ripple effect, which is availabile
+        starting in API version 21. We'll use Android's Drawable classes to create a statelist that handles the ripple behavior for us. Since we have a different background for each button, we
+        need to create the drawable in code rather than in an xml file.
+        <pre>
+private void SetBackground(Android.Views.View rootLayout)
+{
+    // Get the background color from Forms element
+    var backgroundColor = Element.BackgroundColor.ToAndroid();
+
+    // Create statelist to handle ripple effect
+    var enabledBackground = new GradientDrawable(GradientDrawable.Orientation.LeftRight, new int[] { backgroundColor, backgroundColor });
+    var stateList = new StateListDrawable();
+    var rippleItem = new RippleDrawable(ColorStateList.ValueOf(Android.Graphics.Color.White),
+                                        enabledBackground,
+                                        null);
+    stateList.AddState(new[] { Android.Resource.Attribute.StateEnabled }, rippleItem);
+
+    // Assign background
+    rootLayout.Background = stateList;
+}
+        </pre>
+        Call this method in OnElementChanged just before SetNativeControl. If you need to support older versions you can wrap this code in an if block checking for Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop
+        and implement alternate logic in the else block.
+    </p>
+    <p>
+        If we try to run now, we'll notice that nothing happens when you press the buttons. This is because we need to tell Android to respond to click events on our LinearLayout
+        <pre>
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"&gt;
+        </pre>
+        With this in place, we can run the app and watch the ripple effect respond to our touches<br\><img src="AndroidRippleEffect.gif" /><br\>
+        The completed code for this step is available at tag "android-ripple". Next we'll respond to the click event and update the buttons' click counts.
+    </p>
 </body>
 </html>

@@ -44,9 +44,11 @@ namespace RippleRenderer.Droid
 
                 // Tell Xamarin to user our layout for the control
                 SetNativeControl(rootLayout);
+
+                // Execute the bound command on click
+                rootLayout.Click += (s, a) => Element.Command?.Execute(null);
             }
         }
-
 
         private void SetBackground(Android.Views.View rootLayout)
         {
@@ -63,6 +65,15 @@ namespace RippleRenderer.Droid
 
             // Assign background
             rootLayout.Background = stateList;
+        }
+
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+            if (e.PropertyName == IncrementingButton.ClickCountProperty.PropertyName)
+            {
+                _clickCountView.Text = $"Clicked {Element.ClickCount} times";
+            }
         }
     }
 }
